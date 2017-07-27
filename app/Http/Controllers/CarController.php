@@ -15,6 +15,8 @@ use App\Manager\UserManager;
 use App\Request\SaveCarFormRequest;
 use App\Request\SaveCarRequest;
 
+use App\Jobs\SendNotificationEmail;
+
 class CarController extends Controller
 {
 
@@ -141,12 +143,20 @@ class CarController extends Controller
     {
 
         $car = new Car();
-        $carData = new SaveCarRequest($request);
-        $this->carManager->saveCar($carData);
 
-        $cars = $this->carManager->findAll();
+        if (Gate::allows('create', $car)) {
+            $carData = new SaveCarRequest($request);
+            $this->carManager->saveCar($carData);
 
-        return view('cars/index', ['cars' => $this->carManager->findAll()]);
+            // push notification to queue
+            $this->sendEmailNotification($this->userManager->findAll());
+
+            $cars = $this->carManager->findAll();
+
+            return view('cars/index', ['cars' => $cars]);
+        } else {
+            return redirect()->route('cars-list');
+        }
     }
 
     /**
@@ -171,6 +181,19 @@ class CarController extends Controller
         } else {
 
             return view('errors/404');
+        }
+    }
+
+    /**
+     * send email notification to list users
+     *
+     * @return  void
+     */
+    public function sendEmailNotification($users)
+    {
+        foreach ($users as $user) {
+            $job = (new SendNotificationEmail($user))->onQueue('notification');
+            $this->dispatch($job);
         }
     }
 }

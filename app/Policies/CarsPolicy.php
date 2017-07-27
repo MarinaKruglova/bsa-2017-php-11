@@ -28,11 +28,6 @@ class CarsPolicy
     public function delete(User $user)
     {
         return $user->is_admin == true;
-        // if ($user->is_admin === true) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
     }
 
     /**
@@ -44,11 +39,6 @@ class CarsPolicy
     public function edit(User $user)
     {
         return $user->is_admin == true;
-        // if ($user->is_admin === true) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
     }
 
     /**
@@ -60,11 +50,6 @@ class CarsPolicy
     public function create(User $user)
     {
         return $user->is_admin == true;
-        // if ($user->is_admin == true) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
     }
 
     /**
@@ -75,7 +60,7 @@ class CarsPolicy
      */
     public function viewAPI(User $user)
     {
-        // return true;
+
         return $user->is_admin == true;
     }
 }
