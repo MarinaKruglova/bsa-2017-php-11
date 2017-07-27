@@ -14,3 +14,25 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::group(['prefix' => '/cars'], function() {
+        Route::get('/', 'CarController@index')->name('cars-list');
+        Route::post('/', 'CarController@store')->name('car-store');
+
+        Route::get('/create', 'CarController@create')->name('car-form');
+
+        Route::get('/{id}', 'CarController@show')->name('car-show');
+        Route::delete('/{id}', 'CarController@destroy')->name('car-destroy');
+
+        Route::get('/{id}/edit', 'CarController@edit')->name('car-edit');
+        Route::post('/{id}/edit', 'CarController@update')->name('car-update');
+    });
+});
+
+Route::get('auth/github', 'Auth\Github\LoginController@redirectToProvider')->name('github-auth');
+Route::get('auth/github/callback', 'Auth\Github\LoginController@handleProviderCallback')->name('github-callback');
